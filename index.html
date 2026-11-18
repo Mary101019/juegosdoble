@@ -1,11 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Juegos Dobles - Minijuegos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
-<body>
-    
+<body class="bg-primary bg-gradient min-vh-100">
+
+<div class="container py-3" style="max-width: 460px;">
+    <!-- Marco principal con bordes Amarillo Estrella -->
+    <div class="card bg-dark bg-opacity-75 border border-3 border-warning rounded-4 shadow-lg overflow-hidden">
+        
+        <!-- Encabezado: LOGO (imagen) + JUEGOS DOBLES -->
+        <header class="d-flex justify-content-between align-items-center p-3 bg-primary border-bottom border-3 border-warning">
+            <div class="border border-2 border-warning rounded-pill overflow-hidden shadow-sm" style="height: 54px; width: 115px;">
+                <img src="img/logo.jpeg" alt="Logo Minijuegos" class="w-100 h-100" style="object-fit: cover; transform: scale(1.3);" onerror="this.outerHTML='<span class=\'fw-bold text-primary small\'><i class=\'bi bi-controller me-1\'></i>LOGO</span>'">
+            </div>
+
+
+            <div class="text-end">
+                <h1 class="h5 fw-bolder mb-0 text-uppercase text-white">JUEGOS DOBLES</h1>
+                <span class="badge bg-warning text-dark rounded-pill fw-bold">MINIJUEGOS</span>
+            </div>
+        </header>
+
+        <main class="p-4">
+            <!-- Alerta de estado -->
+            <div id="alerta-registro" class="alert alert-warning border-2 border-warning rounded-4 py-2 px-3 small text-center fw-bold mb-4 shadow-sm" role="alert">
+                <i class="bi bi-lock-fill me-1"></i> Regístrate abajo para desbloquear los juegos
+            </div>
+
+            <!-- Fila Juego 1: Cian Eléctrico (lado derecho del mando) -->
+            <div class="row align-items-center mb-4">
+                <div class="col-6 d-flex flex-column align-items-center">
+                    <div class="rounded-circle border border-4 border-info bg-primary p-1 d-flex align-items-center justify-content-center shadow overflow-hidden" style="width: 132px; height: 132px;">
+                        <img src="img/memorama.jpeg" alt="Memorama" class="w-100 h-100 rounded-circle" style="object-fit: cover;" onerror="this.outerHTML='<span class=\'fw-bold text-info text-center small\'>Juego 1<br>Memorama</span>'">
+                    </div>
+                    <span class="badge bg-info text-dark fw-bold rounded-pill mt-2 px-3">Juego 1</span>
+                </div>
+                <div class="col-6 d-flex justify-content-center">
+                    <button id="btn-juego-1" type="button" class="btn btn-secondary border-2 rounded-pill px-4 py-2 fw-bold shadow disabled" data-url="memorama.html">
+                        <i class="bi bi-lock-fill me-1"></i> JUGAR
+                    </button>
+                </div>
+            </div>
+
+            <!-- Fila Juego 2: Coral / Rojo (lado izquierdo del mando) -->
+            <div class="row align-items-center mb-5">
+                <div class="col-6 d-flex justify-content-center">
+                    <button id="btn-juego-2" type="button" class="btn btn-secondary border-2 rounded-pill px-4 py-2 fw-bold shadow disabled" data-url="ahorcado.html">
+                        <i class="bi bi-lock-fill me-1"></i> JUGAR
+                    </button>
+                </div>
+                <div class="col-6 d-flex flex-column align-items-center">
+                    <div class="rounded-circle border border-4 border-danger bg-primary p-1 d-flex align-items-center justify-content-center shadow overflow-hidden" style="width: 132px; height: 132px;">
+                        <img src="img/ahorcado.jpeg" alt="Ahorcado" class="w-100 h-100 rounded-circle" style="object-fit: cover;" onerror="this.outerHTML='<span class=\'fw-bold text-danger text-center small\'>Juego 2<br>Ahorcado</span>'">
+                    </div>
+                    <span class="badge bg-danger fw-bold rounded-pill mt-2 px-3">Juego 2</span>
+                </div>
+            </div>
+
+            <!-- Bloque de Registro con detalles Amarillo Estrella y Cian -->
+            <section class="bg-primary bg-opacity-50 border border-3 border-warning rounded-5 p-4 shadow">
+                <h2 class="h5 fw-bolder text-center text-warning text-uppercase mb-3">
+                    <i class="bi bi-star-fill me-1"></i> Registrarse
+                </h2>
+
+                <form id="form-registro">
+                    <div class="mb-3">
+                        <label for="input-nombre" class="form-label fw-bold text-info small mb-1">Nombre de jugador</label>
+                        <input type="text" id="input-nombre" class="form-control bg-dark text-white border-2 border-info rounded-pill px-3" placeholder="Ej. PlayerOne" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="input-email" class="form-label fw-bold text-info small mb-1">Email</label>
+                        <input type="email" id="input-email" class="form-control bg-dark text-white border-2 border-info rounded-pill px-3" placeholder="jugador@correo.com" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" id="btn-registrar" class="btn btn-warning text-dark border-2 border-white rounded-pill py-2 fw-bolder text-uppercase shadow">
+                            REGISTRARSE
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</div>
+
+<script>
+    const formRegistro = document.getElementById('form-registro');
+    const inputNombre = document.getElementById('input-nombre');
+    const inputEmail = document.getElementById('input-email');
+    const btnRegistrar = document.getElementById('btn-registrar');
+    const alertaRegistro = document.getElementById('alerta-registro');
+    const btnJuego1 = document.getElementById('btn-juego-1');
+    const btnJuego2 = document.getElementById('btn-juego-2');
+
+    function verificarEstadoRegistro() {
+        const usuarioGuardado = JSON.parse(sessionStorage.getItem('usuarioJuegosDobles'));
+        if (usuarioGuardado && usuarioGuardado.nombre && usuarioGuardado.email) {
+            habilitarJuegos(usuarioGuardado.nombre);
+        }
+    }
+
+    function habilitarJuegos(nombre) {
+        alertaRegistro.className = 'alert alert-info border-2 border-info rounded-4 py-2 px-3 small text-center fw-bold text-dark mb-4 shadow-sm';
+        alertaRegistro.innerHTML = `<i class="bi bi-unlock-fill me-1"></i> ¡Listo, ${nombre}! Ya puedes jugar`;
+
+        // Botón Juego 1 en Azul Cian (igual que el mando)
+        btnJuego1.classList.remove('disabled', 'btn-secondary');
+        btnJuego1.classList.add('btn-info', 'text-dark', 'border-white');
+        btnJuego1.innerHTML = '<i class="bi bi-play-fill me-1"></i> JUGAR';
+
+        // Botón Juego 2 en Rojo/Coral (igual que el mando)
+        btnJuego2.classList.remove('disabled', 'btn-secondary');
+        btnJuego2.classList.add('btn-danger', 'border-white');
+        btnJuego2.innerHTML = '<i class="bi bi-play-fill me-1"></i> JUGAR';
+
+        inputNombre.disabled = true;
+        inputEmail.disabled = true;
+        btnRegistrar.disabled = true;
+        btnRegistrar.classList.replace('btn-warning', 'btn-success');
+        btnRegistrar.classList.replace('text-dark', 'text-white');
+        btnRegistrar.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> REGISTRADO';
+    }
+
+    formRegistro.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nombre = inputNombre.value.trim();
+        const email = inputEmail.value.trim();
+
+        if (!nombre || !email) return;
+
+        sessionStorage.setItem('usuarioJuegosDobles', JSON.stringify({ nombre, email }));
+        habilitarJuegos(nombre);
+    });
+
+    [btnJuego1, btnJuego2].forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (!sessionStorage.getItem('usuarioJuegosDobles')) {
+                alertaRegistro.className = 'alert alert-danger border-2 rounded-4 py-2 px-3 small text-center fw-bold mb-4';
+                alertaRegistro.innerHTML = '<i class="bi bi-exclamation-triangle-fill me-1"></i> ¡Completa tu registro primero!';
+                inputNombre.focus();
+                return;
+            }
+            window.location.href = btn.dataset.url;
+        });
+    });
+
+    verificarEstadoRegistro();
+</script>
+
 </body>
 </html>
