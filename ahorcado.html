@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Ahorcado - Pizarra Arcade</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-black text-light min-vh-100">
+
+<div class="container py-3" style="max-width: 480px;">
+    <!-- Marco estilo pizarra con borde dorado/madera -->
+    <div class="card bg-dark border border-3 border-warning rounded-4 shadow-lg overflow-hidden">
+        
+        <!-- Barra superior con botón volver y vidas -->
+        <header class="d-flex justify-content-between align-items-center p-3 bg-black border-bottom border-2 border-secondary">
+            <a href="index.html" class="btn btn-outline-warning btn-sm rounded-pill fw-bold px-3">
+                <i class="bi bi-arrow-left me-1"></i> Inicio
+            </a>
+            <span class="badge bg-danger rounded-pill fs-6 px-3 py-2 shadow-sm">
+                <i class="bi bi-heart-fill me-1"></i> <span id="texto-vidas">6</span>
+            </span>
+        </header>
+
+        <div class="card-body p-4 text-center">
+            <!-- Título bicolor estilo la imagen (AHOR en rojo, CADO en dorado) -->
+            <h2 class="fw-bolder mb-1 text-uppercase tracking-wide">
+                <span class="text-danger">AHOR</span><span class="text-warning">CADO</span>
+            </h2>
+            <p class="text-secondary small mb-3">
+                Categoría: <span id="categoria" class="badge bg-info text-dark fw-bold rounded-pill px-3">Tecnología</span>
+            </p>
+
+            <!-- Pizarra con el dibujo SVG en tiza blanca y madera -->
+            <div class="bg-black border border-2 border-secondary rounded-4 p-3 my-3 shadow-inner">
+                <svg width="170" height="185" viewBox="0 0 170 185" class="mx-auto d-block">
+                    <!-- Trazos decorativos punteados estilo tiza de la imagen -->
+                    <path d="M 20 55 Q 5 85 28 100 T 35 130" fill="none" stroke="#adb5bd" stroke-width="2" stroke-dasharray="5,5" />
+                    <path d="M 135 85 Q 155 75 150 95" fill="none" stroke="#adb5bd" stroke-width="2" stroke-dasharray="4,4" />
+
+                    <!-- Estructura de la horca estilo madera con refuerzo diagonal -->
+                    <line x1="25" y1="165" x2="135" y2="165" stroke="#8d5524" stroke-width="8" stroke-linecap="round" />
+                    <line x1="50" y1="165" x2="50" y2="20" stroke="#8d5524" stroke-width="8" stroke-linecap="round" />
+                    <line x1="50" y1="20" x2="115" y2="20" stroke="#8d5524" stroke-width="8" stroke-linecap="round" />
+                    <line x1="50" y1="50" x2="80" y2="20" stroke="#6f4e37" stroke-width="6" stroke-linecap="round" />
+                    <!-- Cuerda dorada -->
+                    <line x1="115" y1="20" x2="115" y2="44" stroke="#ffc107" stroke-width="4" stroke-dasharray="4,2" />
+
+                    <!-- 1. Cabeza con carita triste (Error 1) -->
+                    <g id="parte-1" class="d-none">
+                        <circle cx="115" cy="58" r="14" stroke="#f8f9fa" stroke-width="4" fill="#212529" />
+                        <circle cx="110" cy="55" r="1.5" fill="#f8f9fa" />
+                        <circle cx="120" cy="55" r="1.5" fill="#f8f9fa" />
+                        <path d="M 110 64 Q 115 60 120 64" stroke="#f8f9fa" stroke-width="2" fill="none" stroke-linecap="round" />
+                    </g>
+                    <!-- 2. Tronco colorido estilo suéter de la imagen (Error 2) -->
+                    <line id="parte-2" x1="115" y1="72" x2="115" y2="108" stroke="#0dcaf0" stroke-width="6" stroke-linecap="round" class="d-none" />
+                    <!-- 3. Brazo derecho (Error 3) -->
+                    <line id="parte-3" x1="115" y1="80" x2="137" y2="94" stroke="#ffc107" stroke-width="5" stroke-linecap="round" class="d-none" />
+                    <!-- 4. Brazo izquierdo (Error 4) -->
+                    <line id="parte-4" x1="115" y1="80" x2="93" y2="94" stroke="#dc3545" stroke-width="5" stroke-linecap="round" class="d-none" />
+                    <!-- 5. Pierna izquierda (Error 5) -->
+                    <line id="parte-5" x1="115" y1="108" x2="103" y2="136" stroke="#0d6efd" stroke-width="5" stroke-linecap="round" class="d-none" />
+                    <!-- 6. Pierna derecha (Error 6) -->
+                    <line id="parte-6" x1="115" y1="108" x2="127" y2="136" stroke="#0d6efd" stroke-width="5" stroke-linecap="round" class="d-none" />
+                </svg>
+            </div>
+
+            <!-- Palabra oculta estilo líneas blancas de tiza -->
+            <div id="contenedor-palabra" class="d-flex justify-content-center flex-wrap gap-2 my-4">
+                <!-- Las letras se generan dinámicamente -->
+            </div>
+
+            <!-- Alertas de estado -->
+            <div id="alerta-estado" class="alert d-none fw-bold rounded-4" role="alert"></div>
+
+            <!-- Teclado en pantalla estilo teclas arcade -->
+            <div id="teclado" class="d-flex flex-wrap justify-content-center gap-1 mb-4">
+                <!-- Los botones de letras se generan con JS -->
+            </div>
+
+            <button id="btn-reiniciar" class="btn btn-warning text-dark border-2 border-white rounded-pill py-2 fw-bolder text-uppercase w-100 shadow">
+                <i class="bi bi-arrow-clockwise me-1"></i> Nueva Palabra
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Verificar si el usuario pasó por el registro en index.html
+    if (!sessionStorage.getItem('usuarioJuegosDobles')) {
+        window.location.href = 'index.html';
+    }
+
+    const palabras = [
+        { palabra: 'JAVASCRIPT', categoria: 'Programación' },
+        { palabra: 'BOOTSTRAP', categoria: 'Diseño Web' },
+        { palabra: 'ALGORITMO', categoria: 'Informática' },
+        { palabra: 'SERVIDOR', categoria: 'Redes' },
+        { palabra: 'COMPILADOR', categoria: 'Software' },
+        { palabra: 'ESTRUCTURA', categoria: 'Datos' },
+        { palabra: 'NAVEGADOR', categoria: 'Internet' },
+        { palabra: 'TECLADO', categoria: 'Hardware' }
+    ];
+
+    const MAX_VIDAS = 6;
+    const ABECEDARIO = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ'.split('');
+
+    let palabraSecreta = '';
+    let letrasAdivinadas = [];
+    let errores = 0;
+    let juegoTerminado = false;
+
+    const spanCategoria = document.getElementById('categoria');
+    const textoVidas = document.getElementById('texto-vidas');
+    const contenedorPalabra = document.getElementById('contenedor-palabra');
+    const alertaEstado = document.getElementById('alerta-estado');
+    const teclado = document.getElementById('teclado');
+    const btnReiniciar = document.getElementById('btn-reiniciar');
+
+    function iniciarJuego() {
+        const seleccion = palabras[Math.floor(Math.random() * palabras.length)];
+        palabraSecreta = seleccion.palabra;
+        spanCategoria.textContent = seleccion.categoria;
+
+        letrasAdivinadas = [];
+        errores = 0;
+        juegoTerminado = false;
+
+        textoVidas.textContent = MAX_VIDAS;
+        alertaEstado.className = 'alert d-none fw-bold rounded-4';
+
+        for (let i = 1; i <= MAX_VIDAS; i++) {
+            document.getElementById(`parte-${i}`).classList.add('d-none');
+        }
+
+        renderizarPalabra();
+        generarTeclado();
+    }
+
+    function renderizarPalabra() {
+        contenedorPalabra.innerHTML = '';
+        let palabraCompleta = true;
+
+        palabraSecreta.split('').forEach(letra => {
+            const caja = document.createElement('span');
+            caja.className = 'border-bottom border-3 border-light px-2 py-1 fs-3 fw-bold text-uppercase text-warning';
+
+            if (letrasAdivinadas.includes(letra)) {
+                caja.textContent = letra;
+            } else {
+                caja.textContent = '_';
+                caja.classList.remove('text-warning');
+                caja.classList.add('text-secondary');
+                palabraCompleta = false;
+            }
+
+            contenedorPalabra.appendChild(caja);
+        });
+
+        if (palabraCompleta) {
+            finalizarJuego(true);
+        }
+    }
+
+    function generarTeclado() {
+        teclado.innerHTML = '';
+        ABECEDARIO.forEach(letra => {
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-outline-light fw-bold rounded-3';
+            btn.textContent = letra;
+            btn.addEventListener('click', () => manejarIntento(letra, btn));
+            teclado.appendChild(btn);
+        });
+    }
+
+    function manejarIntento(letra, boton) {
+        if (juegoTerminado || boton.disabled) return;
+
+        boton.disabled = true;
+        boton.classList.remove('btn-outline-light');
+
+        if (palabraSecreta.includes(letra)) {
+            boton.classList.add('btn-success');
+            letrasAdivinadas.push(letra);
+            renderizarPalabra();
+        } else {
+            boton.classList.add('btn-danger');
+            errores++;
+            textoVidas.textContent = MAX_VIDAS - errores;
+
+            const parteDibujo = document.getElementById(`parte-${errores}`);
+            if (parteDibujo) {
+                parteDibujo.classList.remove('d-none');
+            }
+
+            if (errores === MAX_VIDAS) {
+                finalizarJuego(false);
+            }
+        }
+    }
+
+    function finalizarJuego(gano) {
+        juegoTerminado = true;
+        const botones = teclado.querySelectorAll('button');
+        botones.forEach(b => b.disabled = true);
+
+        if (gano) {
+            alertaEstado.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> ¡Felicidades! Adivinaste la palabra.';
+            alertaEstado.className = 'alert alert-success border-2 fw-bold rounded-4';
+        } else {
+            alertaEstado.innerHTML = `<i class="bi bi-x-circle-fill me-1"></i> ¡Perdiste! La palabra era: ${palabraSecreta}`;
+            alertaEstado.className = 'alert alert-danger border-2 fw-bold rounded-4';
+
+            letrasAdivinadas = palabraSecreta.split('');
+            renderizarPalabra();
+        }
+    }
+
+    btnReiniciar.addEventListener('click', iniciarJuego);
+    iniciarJuego();
+</script>
+
+</body>
+</html>
