@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memorama - Arcade</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body class="bg-primary bg-gradient text-light min-vh-100">
+
+<div class="container py-3" style="max-width: 480px;">
+    <!-- Tarjeta principal estilo consola -->
+    <div class="card bg-dark bg-opacity-75 border border-3 border-info rounded-4 shadow-lg overflow-hidden">
+        
+        <!-- Encabezado con botón Volver e indicadores -->
+        <header class="d-flex justify-content-between align-items-center p-3 bg-primary border-bottom border-3 border-info">
+            <a href="index.html" class="btn btn-outline-light btn-sm rounded-pill fw-bold px-3">
+                <i class="bi bi-arrow-left me-1"></i> Inicio
+            </a>
+            <h2 class="h5 fw-bolder mb-0 text-uppercase text-white">MEMORAMA</h2>
+        </header>
+
+        <div class="card-body p-4 text-center">
+            <!-- Panel de marcadores -->
+            <div class="d-flex justify-content-between align-items-center bg-black border border-2 border-secondary p-3 rounded-4 shadow-sm mb-4">
+                <span class="small text-info fw-bold">Intentos: <strong id="intentos" class="text-white fs-5">0</strong></span>
+                <span class="small text-info fw-bold">Parejas: <strong id="parejas" class="text-warning fs-5">0 / 6</strong></span>
+                <button id="btn-reiniciar" class="btn btn-outline-warning btn-sm rounded-pill fw-bold px-3">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+
+            <!-- Tablero de cartas -->
+            <div id="tablero" class="row g-2 mb-3">
+                <!-- Las cartas se generan dinámicamente con JS -->
+            </div>
+
+            <!-- Alerta de victoria -->
+            <div id="mensaje-victoria" class="alert alert-success border-2 rounded-4 fw-bold d-none shadow" role="alert">
+                <i class="bi bi-trophy-fill me-1"></i> ¡Felicidades! Has encontrado todas las parejas.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Verificar si el usuario pasó por el registro en index.html
+    if (!sessionStorage.getItem('usuarioJuegosDobles')) {
+        window.location.href = 'index.html';
+    }
+
+    const iconos = ['🚀', '💻', '🎮', '🔥', '⚡', '🎯'];
+    let cartas = [];
+    let cartasVolteadas = [];
+    let parejasEncontradas = 0;
+    let intentos = 0;
+    let bloqueoTablero = false;
+
+    const tablero = document.getElementById('tablero');
+    const spanIntentos = document.getElementById('intentos');
+    const spanParejas = document.getElementById('parejas');
+    const mensajeVictoria = document.getElementById('mensaje-victoria');
+    const btnReiniciar = document.getElementById('btn-reiniciar');
+
+    function mezclar(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function iniciarJuego() {
+        tablero.innerHTML = '';
+        cartasVolteadas = [];
+        parejasEncontradas = 0;
+        intentos = 0;
+        bloqueoTablero = false;
+
+        spanIntentos.textContent = intentos;
+        spanParejas.textContent = `0 / ${iconos.length}`;
+        mensajeVictoria.classList.add('d-none');
+
+        cartas = mezclar([...iconos, ...iconos]);
+
+        cartas.forEach((icono, index) => {
+            const col = document.createElement('div');
+            col.className = 'col-4 col-sm-4'; // Cuadrícula adaptada mobile-first
+
+            const boton = document.createElement('button');
+            // Estilo de carta cerrada con bordes redondeados y aspecto vibrante
+            boton.className = 'btn btn-info w-100 py-3 fs-2 shadow-sm fw-bold rounded-4 border border-2 border-white text-dark';
+            boton.dataset.icono = icono;
+            boton.dataset.index = index;
+            boton.textContent = '❓';
+
+            boton.addEventListener('click', () => voltearCarta(boton));
+            col.appendChild(boton);
+            tablero.appendChild(col);
+        });
+    }
+
+    function voltearCarta(boton) {
+        if (bloqueoTablero) return;
+        if (boton.classList.contains('btn-light') || boton.classList.contains('btn-success')) return;
+
+        boton.classList.remove('btn-info', 'text-dark');
+        boton.classList.add('btn-light', 'text-dark', 'border-warning');
+        boton.textContent = boton.dataset.icono;
+        cartasVolteadas.push(boton);
+
+        if (cartasVolteadas.length === 2) {
+            intentos++;
+            spanIntentos.textContent = intentos;
+            verificarPareja();
+        }
+    }
+
+    function verificarPareja() {
+        bloqueoTablero = true;
+        const [carta1, carta2] = cartasVolteadas;
+
+        if (carta1.dataset.icono === carta2.dataset.icono) {
+            carta1.classList.replace('btn-light', 'btn-success');
+            carta1.classList.add('text-white');
+            carta2.classList.replace('btn-light', 'btn-success');
+            carta2.classList.add('text-white');
+            parejasEncontradas++;
+            spanParejas.textContent = `${parejasEncontradas} / ${iconos.length}`;
+            cartasVolteadas = [];
+            bloqueoTablero = false;
+
+            if (parejasEncontradas === iconos.length) {
+                mensajeVictoria.classList.remove('d-none');
+            }
+        } else {
+            setTimeout(() => {
+                carta1.classList.remove('btn-light', 'border-warning', 'text-dark');
+                carta1.classList.add('btn-info', 'text-dark');
+                carta1.textContent = '❓';
+
+                carta2.classList.remove('btn-light', 'border-warning', 'text-dark');
+                carta2.classList.add('btn-info', 'text-dark');
+                carta2.textContent = '❓';
+
+                cartasVolteadas = [];
+                bloqueoTablero = false;
+            }, 800);
+        }
+    }
+
+    btnReiniciar.addEventListener('click', iniciarJuego);
+    iniciarJuego();
+</script>
+
+</body>
+</html>
